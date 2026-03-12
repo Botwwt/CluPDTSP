@@ -145,4 +145,3 @@ To evaluate another ablation, replace `run_full.py` with one of:
       primaryClass={cs.LG},
       url={[https://arxiv.org/abs/2603.10053](https://arxiv.org/abs/2603.10053)}, 
 }
-<details>
