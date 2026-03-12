@@ -127,14 +127,15 @@ To evaluate another ablation, replace `run_full.py` with one of:
 - `utils.py`: logging and utility helpers
 - `data/`: dataset directory (not version-controlled)
 
-## Cite
+## Citation
 
-@misc{wang2026clusterawareattentionbaseddeepreinforcement,
-      title={Cluster-Aware Attention-Based Deep Reinforcement Learning for Pickup and Delivery Problems}, 
-      author={Wentao Wang and Lifeng Han and Guangyu Zou},
-      year={2026},
-      eprint={2603.10053},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2603.10053}, 
+If you find this work useful in your research, please consider citing:
+
+```bibtex
+@article{wang2026clusteraware,
+  title  = {Cluster-Aware Attention-Based Deep Reinforcement Learning for Pickup and Delivery Problems},
+  author = {Wang, Wentao and Han, Lifeng and Zou, Guangyu},
+  journal= {arXiv preprint arXiv:2603.10053},
+  year   = {2026},
+  url    = {[https://arxiv.org/abs/2603.10053](https://arxiv.org/abs/2603.10053)}
 }
