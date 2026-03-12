@@ -126,3 +126,15 @@ To evaluate another ablation, replace `run_full.py` with one of:
 - `generate_pdp_dataset.py`: test-set generator
 - `utils.py`: logging and utility helpers
 - `data/`: dataset directory (not version-controlled)
+
+## Cite
+
+@misc{wang2026clusterawareattentionbaseddeepreinforcement,
+      title={Cluster-Aware Attention-Based Deep Reinforcement Learning for Pickup and Delivery Problems}, 
+      author={Wentao Wang and Lifeng Han and Guangyu Zou},
+      year={2026},
+      eprint={2603.10053},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2603.10053}, 
+}
