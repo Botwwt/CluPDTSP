@@ -6,7 +6,7 @@ Generated on AutoDL at `2026-06-24 01:46:45` from `/root/autodl-tmp/CluPDTSP_git
 
 Wang Wentao's AutoDL-side work is complete at the repository/artifact level: Heter rerun, six core ablations, Heter Li&Lim-PDP-relaxed benchmark, Heter runtime/memory profiling, Heter route metrics and visualization, manuscript integration, response letter updates, reproducibility notes, manifest updates, and final verification have all been completed using the AutoDL worktree.
 
-The only item that depends on external state is GitHub upload from AutoDL: the worktree is committed locally and ahead of `origin/main`, but AutoDL has no noninteractive GitHub credential. The repository should be pushed once GitHub credentials/network access are available, or via an authenticated Git transport that does not run experiments locally.
+GitHub upload has also been completed. Direct push from AutoDL was blocked because the server has no noninteractive GitHub credential; after all experiments, validation, manuscript edits, and commits were completed on AutoDL, the finished commit history and required Git LFS objects were pushed through an authenticated Git transport without running any experiment code locally.
 
 ## Current Git state on AutoDL
 
@@ -52,6 +52,6 @@ The only item that depends on external state is GitHub upload from AutoDL: the w
 - Structured CSV/artifact audit over Heter, ablation, Li&Lim, profiling, paired statistics, route metrics, figures, docs, and scripts
 - Exact credential scan for the supplied AutoDL password
 
-## Remaining operational action
+## GitHub push status
 
-Push the AutoDL commit history to `https://github.com/Botwwt/CluPDTSP.git`. Current AutoDL state is ready, but direct AutoDL push fails without GitHub username/token/SSH key. No additional training or evaluation is needed before the push.
+Completed. The AutoDL-produced commit history and required Git LFS objects were pushed to `https://github.com/Botwwt/CluPDTSP.git` on branch `main`. Direct push from AutoDL remains unavailable without a GitHub credential on that server, but no experiment code was run outside AutoDL.
