@@ -1,0 +1,41 @@
+\begin{tabular}{lllllllrrrr}\toprule
+Method & Variant & Dataset & Size & Distribution & Decode & Seed & N & Mean & Std. & Avg. time \\
+\midrule
+CAADRL & avg_fusion & pdp20_test_clustered_std0.1_seed10000_n10000 & 20 & clustered & Greedy & 10000 & 10000 & 2.751038 & 0.218331 & 0.001606 \\
+CAADRL & avg_fusion & pdp20_test_clustered_std0.1_seed10000_n10000 & 20 & clustered & Sampling-1280 & 10000 & 10000 & 2.742686 & 0.215596 & 0.002259 \\
+CAADRL & avg_fusion & pdp40_test_clustered_std0.1_seed10000_n10000 & 40 & clustered & Greedy & 10000 & 10000 & 3.543860 & 0.241066 & 0.016718 \\
+CAADRL & avg_fusion & pdp40_test_clustered_std0.1_seed10000_n10000 & 40 & clustered & Sampling-1280 & 10000 & 10000 & 3.510294 & 0.233300 & 0.020571 \\
+CAADRL & avg_fusion & pdp80_test_clustered_std0.1_seed10000_n10000 & 80 & clustered & Greedy & 10000 & 10000 & 4.833997 & 0.268258 & 0.005344 \\
+CAADRL & avg_fusion & pdp80_test_clustered_std0.1_seed10000_n10000 & 80 & clustered & Sampling-1280 & 10000 & 10000 & 4.723545 & 0.253474 & 0.014043 \\
+CAADRL & cluster_only & pdp20_test_clustered_std0.1_seed10000_n10000 & 20 & clustered & Greedy & 10000 & 10000 & 2.750093 & 0.217924 & 0.001883 \\
+CAADRL & cluster_only & pdp20_test_clustered_std0.1_seed10000_n10000 & 20 & clustered & Sampling-1280 & 10000 & 10000 & 2.742507 & 0.215553 & 0.002696 \\
+CAADRL & cluster_only & pdp40_test_clustered_std0.1_seed10000_n10000 & 40 & clustered & Greedy & 10000 & 10000 & 3.547508 & 0.241450 & 0.003423 \\
+CAADRL & cluster_only & pdp40_test_clustered_std0.1_seed10000_n10000 & 40 & clustered & Sampling-1280 & 10000 & 10000 & 3.511704 & 0.233250 & 0.005623 \\
+CAADRL & cluster_only & pdp80_test_clustered_std0.1_seed10000_n10000 & 80 & clustered & Greedy & 10000 & 10000 & 4.852008 & 0.270104 & 0.006818 \\
+CAADRL & cluster_only & pdp80_test_clustered_std0.1_seed10000_n10000 & 80 & clustered & Sampling-1280 & 10000 & 10000 & 4.750311 & 0.256478 & 0.015620 \\
+CAADRL & full & pdp20_test_clustered_std0.1_seed10000_n10000 & 20 & clustered & Greedy & 10000 & 10000 & 2.749304 & 0.217756 & 0.028002 \\
+CAADRL & full & pdp20_test_clustered_std0.1_seed10000_n10000 & 20 & clustered & Sampling-1280 & 10000 & 10000 & 2.742406 & 0.215523 & 0.034731 \\
+CAADRL & full & pdp40_test_clustered_std0.1_seed10000_n10000 & 40 & clustered & Greedy & 10000 & 10000 & 3.548183 & 0.240777 & 0.052192 \\
+CAADRL & full & pdp40_test_clustered_std0.1_seed10000_n10000 & 40 & clustered & Sampling-1280 & 10000 & 10000 & 3.513049 & 0.233576 & 0.064711 \\
+CAADRL & full & pdp80_test_clustered_std0.1_seed10000_n10000 & 80 & clustered & Greedy & 10000 & 10000 & 4.856904 & 0.269490 & 0.182947 \\
+CAADRL & full & pdp80_test_clustered_std0.1_seed10000_n10000 & 80 & clustered & Sampling-1280 & 10000 & 10000 & 4.752887 & 0.256698 & 0.121454 \\
+CAADRL & no_dec_cluster & pdp20_test_clustered_std0.1_seed10000_n10000 & 20 & clustered & Greedy & 10000 & 10000 & 2.750884 & 0.218173 & 0.001182 \\
+CAADRL & no_dec_cluster & pdp20_test_clustered_std0.1_seed10000_n10000 & 20 & clustered & Sampling-1280 & 10000 & 10000 & 2.742270 & 0.215515 & 0.001596 \\
+CAADRL & no_dec_cluster & pdp40_test_clustered_std0.1_seed10000_n10000 & 40 & clustered & Greedy & 10000 & 10000 & 3.558946 & 0.243706 & 0.001973 \\
+CAADRL & no_dec_cluster & pdp40_test_clustered_std0.1_seed10000_n10000 & 40 & clustered & Sampling-1280 & 10000 & 10000 & 3.514078 & 0.233934 & 0.003278 \\
+CAADRL & no_dec_cluster & pdp80_test_clustered_std0.1_seed10000_n10000 & 80 & clustered & Greedy & 10000 & 10000 & 4.855716 & 0.270560 & 0.003434 \\
+CAADRL & no_dec_cluster & pdp80_test_clustered_std0.1_seed10000_n10000 & 80 & clustered & Sampling-1280 & 10000 & 10000 & 4.739317 & 0.254600 & 0.008417 \\
+CAADRL & no_enc_cluster & pdp20_test_clustered_std0.1_seed10000_n10000 & 20 & clustered & Greedy & 10000 & 10000 & 2.751177 & 0.218112 & 0.027174 \\
+CAADRL & no_enc_cluster & pdp20_test_clustered_std0.1_seed10000_n10000 & 20 & clustered & Sampling-1280 & 10000 & 10000 & 2.742333 & 0.215461 & 0.002618 \\
+CAADRL & no_enc_cluster & pdp40_test_clustered_std0.1_seed10000_n10000 & 40 & clustered & Greedy & 10000 & 10000 & 3.559811 & 0.243487 & 0.003466 \\
+CAADRL & no_enc_cluster & pdp40_test_clustered_std0.1_seed10000_n10000 & 40 & clustered & Sampling-1280 & 10000 & 10000 & 3.516030 & 0.234031 & 0.005589 \\
+CAADRL & no_enc_cluster & pdp80_test_clustered_std0.1_seed10000_n10000 & 80 & clustered & Greedy & 10000 & 10000 & 4.876262 & 0.271740 & 0.006561 \\
+CAADRL & no_enc_cluster & pdp80_test_clustered_std0.1_seed10000_n10000 & 80 & clustered & Sampling-1280 & 10000 & 10000 & 4.762048 & 0.257263 & 0.015800 \\
+CAADRL & no_pomo & pdp20_test_clustered_std0.1_seed10000_n10000 & 20 & clustered & Greedy & 10000 & 10000 & 4.634181 & 0.496274 & 0.001973 \\
+CAADRL & no_pomo & pdp20_test_clustered_std0.1_seed10000_n10000 & 20 & clustered & Sampling-1280 & 10000 & 10000 & 4.918937 & 0.494782 & 0.002982 \\
+CAADRL & no_pomo & pdp40_test_clustered_std0.1_seed10000_n10000 & 40 & clustered & Greedy & 10000 & 10000 & 8.177206 & 0.701477 & 0.003703 \\
+CAADRL & no_pomo & pdp40_test_clustered_std0.1_seed10000_n10000 & 40 & clustered & Sampling-1280 & 10000 & 10000 & 11.144375 & 0.730725 & 0.005874 \\
+CAADRL & no_pomo & pdp80_test_clustered_std0.1_seed10000_n10000 & 80 & clustered & Greedy & 10000 & 10000 & 15.233676 & 0.996273 & 0.006701 \\
+CAADRL & no_pomo & pdp80_test_clustered_std0.1_seed10000_n10000 & 80 & clustered & Sampling-1280 & 10000 & 10000 & 24.610988 & 1.101314 & 0.016194 \\
+\bottomrule
+\end{tabular}

@@ -13,7 +13,7 @@ class CVRPTester:
         self.model_params = model_params
         self.tester_params = tester_params
         self.logger = getLogger(name='tester')
-        
+
         USE_CUDA = self.tester_params['use_cuda']
         if USE_CUDA:
             cuda_device_num = self.tester_params['cuda_device_num']
@@ -21,7 +21,7 @@ class CVRPTester:
             torch.cuda.set_device(cuda_device_num)
         else:
             device = torch.device('cpu')
-        
+
         self.device = device
         self.env_params['device'] = device # Pass device to env params
 
@@ -46,14 +46,19 @@ class CVRPTester:
         if not ckpt_params:
             return
         ckpt_flags = {
+            'enable_encoder_global': ckpt_params.get('enable_encoder_global', True),
             'enable_encoder_cluster': ckpt_params.get('enable_encoder_cluster', True),
             'enable_decoder_cluster': ckpt_params.get('enable_decoder_cluster', True),
-            'use_learned_gate': ckpt_params.get('use_learned_gate', False),
+            'decoder_fusion': ckpt_params.get(
+                'decoder_fusion',
+                'learned_gate' if ckpt_params.get('use_learned_gate', False) else 'rule'
+            ),
         }
         current_flags = {
+            'enable_encoder_global': self.model_params.get('enable_encoder_global', True),
             'enable_encoder_cluster': self.model_params.get('enable_encoder_cluster', True),
             'enable_decoder_cluster': self.model_params.get('enable_decoder_cluster', True),
-            'use_learned_gate': self.model_params.get('use_learned_gate', False),
+            'decoder_fusion': self.model_params.get('decoder_fusion', 'rule'),
         }
         mismatches = []
         for key, ckpt_value in ckpt_flags.items():
@@ -70,11 +75,11 @@ class CVRPTester:
 
         depot_xy, node_xy, node_demand, cluster_list, pairing, scale, id_to_idx, depot_id = \
             load_pdtsp_instance(filepath, device=self.device)
-        
+
         self.env.use_saved_problems(depot_xy, node_xy, node_demand, cluster_list, pairing)
 
         aug_factor = self.tester_params.get('aug_factor', 1) if self.tester_params.get('augmentation_enable', False) else 1
-        
+
         with torch.no_grad():
             # The batch_size for a single instance is always 1
             self.env.load_problems(1, aug_factor)
@@ -89,20 +94,20 @@ class CVRPTester:
         # Reshape reward based on aug_factor and original pomo_size
         pomo_size = self.env.pomo_size
         reward = reward.reshape(aug_factor, pomo_size)
-        
+
         best_pomo_reward, best_pomo_idx = reward.max(dim=1)
         best_aug_reward, best_aug_idx = best_pomo_reward.max(dim=0)
-        
+
         best_solution_pomo_idx = best_pomo_idx[best_aug_idx]
-        
+
         # Adjust batch index for augmentation
         # The selected_node_list has a batch dimension equal to aug_factor
         best_solution_batch_idx = best_aug_idx.item()
 
         best_tour_indices = self.env.selected_node_list[best_solution_batch_idx, best_solution_pomo_idx, :]
-        
+
         idx_to_id = {v: k for k, v in id_to_idx.items()}
-        
+
         best_tour_original_ids = []
         for env_idx in best_tour_indices.tolist():
             if env_idx == 0:
@@ -110,10 +115,10 @@ class CVRPTester:
             else:
                 tensor_idx = env_idx - 1
                 best_tour_original_ids.append(idx_to_id[tensor_idx])
-        
+
         final_score = -best_aug_reward.item() * scale
 
         self.logger.info(f"Best solution tour length: {final_score:.4f}")
         self.logger.info(f"Best solution tour (original IDs): {best_tour_original_ids}")
-        
+
         return final_score, best_tour_original_ids

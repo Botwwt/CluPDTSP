@@ -1,0 +1,2 @@
+method,size,distribution,decode,seed,n,warmup,checkpoint,peak_gpu_allocated_gb,peak_gpu_reserved_gb,cpu_ram_gb,latency_per_instance_sec,throughput_inst_per_sec,p95_latency_sec,total_runtime_sec
+Heter,40,uniform,Sampling-12800,10000,256,20,/root/autodl-tmp/CluPDTSP/checkpoints/heter/pdp_40/heter_pdp40_rollout_resume_20260622T222725/epoch-799.pt,0.20198535919189453,0.294921875,0.8342971801757812,0.5488166979775997,1.822101994500203,0.564252938143909,140.49707468226552

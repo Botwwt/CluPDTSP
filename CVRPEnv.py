@@ -72,8 +72,6 @@ class CVRPEnv:
             node_demand = self.saved_node_demand.to(device)
             cluster_list = self.saved_cluster_list.to(device)
             self.pairing = self.saved_pairing.to(device)
-            if self.batch_size != 1 and aug_factor == 1:
-                self.batch_size = 1
 
         if aug_factor > 1:
             if aug_factor == 8:
@@ -122,7 +120,7 @@ class CVRPEnv:
         # Initialize the cluster-entry state at reset.
         # All routes start at the depot, so the first node in the cluster is depot index 0.
         self.first_node_in_cluster = torch.zeros((self.batch_size, self.pomo_size), dtype=torch.long, device=device)
-        
+
         self.delivery_available_mask = torch.full(size=(self.batch_size, self.pomo_size, self.problem_size + 1),
                                                   fill_value=float('-inf'), device=device)
         num_pickups = self.problem_size // 2
@@ -151,18 +149,18 @@ class CVRPEnv:
             # Keep the in_cluster decision logic unchanged.
             is_pickup_node_mask = (self.cluster_list == 1)
             unvisited_pickups_exist = ((self.visited_ninf_flag == 0) & is_pickup_node_mask.unsqueeze(1)).any(dim=2)
-            
+
             current_cluster = self.cluster_list[self.BATCH_IDX, self.current_node]
 
             is_switching_moment = (current_cluster == 1) & (~unvisited_pickups_exist)
-            
+
             self.in_cluster = ~is_switching_moment
-            
+
         self.step_state.in_cluster = self.in_cluster
 
         # Pass the new state field to the model during pre_step.
         self.step_state.first_node_in_cluster = self.first_node_in_cluster
-        
+
         reward = None
         done = False
         return self.step_state, reward, done
@@ -172,13 +170,13 @@ class CVRPEnv:
     def step(self, selected):
         # Record the previous node so cluster transitions can be detected after the update.
         prev_node = self.current_node
-        
+
         self.selected_count += 1
         self.current_node = selected
         self.selected_node_list = torch.cat((self.selected_node_list, self.current_node[:, :, None]), dim=2)
-        
+
         # Core logic for updating the first node of the current cluster.
-        
+
         # ======================= Key fix =======================
         # Clone self.first_node_in_cluster before any in-place update.
         # This preserves computation-graph dependencies from earlier steps.
@@ -189,14 +187,14 @@ class CVRPEnv:
             # Get the cluster IDs of the previous and current nodes.
             prev_cluster = self.cluster_list[self.BATCH_IDX, prev_node]
             current_cluster = self.cluster_list[self.BATCH_IDX, self.current_node]
-            
+
             # Detect routes that just switched clusters.
             # Conditions: the cluster changed and the new cluster is not the depot (0).
             is_switched_mask = (prev_cluster != current_cluster) & (current_cluster != 0)
-            
+
             # For switched routes, the current node becomes the entry node of the new cluster.
             self.first_node_in_cluster[is_switched_mask] = self.current_node[is_switched_mask]
-        
+
         elif self.selected_count == 1:  # First move after leaving the depot.
             # The first visited node is naturally the entry node of the first cluster.
             # This assignment is not in-place, but the clone above keeps the logic consistent and safe.
@@ -211,7 +209,7 @@ class CVRPEnv:
 
         if is_pickup_visit.any():
             delivery_partners = self.pairing[self.BATCH_IDX, selected]
-            
+
             update_mask = torch.zeros_like(self.delivery_available_mask, dtype=torch.bool)
             update_mask[self.BATCH_IDX[is_pickup_visit], self.POMO_IDX[is_pickup_visit], delivery_partners[is_pickup_visit]] = True
             self.delivery_available_mask[update_mask] = 0

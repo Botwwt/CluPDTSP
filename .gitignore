@@ -1,0 +1,34 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.smoke_ablation/
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+
+# Local patch/temp artifacts
+.patch-backups/
+
+# Preserve final checkpoints only; intermediate snapshots stay on AutoDL.
+checkpoints/**/*.pt
+!checkpoints/**/checkpoint-800.pt
+!checkpoints/**/epoch-799.pt
+checkpoints/**/*.pth
+
+# Runtime process metadata is not reproducibility evidence.
+logs/**/*.pid
+logs/**/*.env
+logs/**/*.logpath
+
+# Checkpoint-internal source snapshots are redundant with repository source.
+checkpoints/**/run_log
+checkpoints/**/src/
+
+# Smoke and legacy rerun leftovers are kept on AutoDL but not committed.
+checkpoints/heter_smoke/
+results/raw/heter_legacy/

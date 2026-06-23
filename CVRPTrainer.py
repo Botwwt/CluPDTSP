@@ -95,7 +95,7 @@ class CVRPTrainer:
 
             all_done = (epoch == self.trainer_params['epochs'])
             model_save_interval = self.trainer_params['logging']['model_save_interval']
-            
+
             if all_done or (epoch % model_save_interval) == 0:
                 self.logger.info("Saving trained_model")
                 checkpoint_dict = {
@@ -147,7 +147,7 @@ class CVRPTrainer:
         self.env.load_problems(batch_size)
         reset_state, _, _ = self.env.reset()
         self.model.pre_forward(reset_state)
-        
+
         prob_list = torch.zeros(size=(batch_size, self.env.pomo_size, 0), device=self.device)
         state, reward, done = self.env.pre_step()
         while not done:
@@ -166,7 +166,7 @@ class CVRPTrainer:
         self.model.zero_grad()
         loss_mean.backward()
         self.optimizer.step()
-        
+
         return score_mean.item(), loss_mean.item()
 
     def _ensure_checkpoint_compatible(self, checkpoint):
@@ -174,14 +174,19 @@ class CVRPTrainer:
         if not ckpt_params:
             return
         ckpt_flags = {
+            'enable_encoder_global': ckpt_params.get('enable_encoder_global', True),
             'enable_encoder_cluster': ckpt_params.get('enable_encoder_cluster', True),
             'enable_decoder_cluster': ckpt_params.get('enable_decoder_cluster', True),
-            'use_learned_gate': ckpt_params.get('use_learned_gate', False),
+            'decoder_fusion': ckpt_params.get(
+                'decoder_fusion',
+                'learned_gate' if ckpt_params.get('use_learned_gate', False) else 'rule'
+            ),
         }
         current_flags = {
+            'enable_encoder_global': self.model_params.get('enable_encoder_global', True),
             'enable_encoder_cluster': self.model_params.get('enable_encoder_cluster', True),
             'enable_decoder_cluster': self.model_params.get('enable_decoder_cluster', True),
-            'use_learned_gate': self.model_params.get('use_learned_gate', False),
+            'decoder_fusion': self.model_params.get('decoder_fusion', 'rule'),
         }
         mismatches = []
         for key, ckpt_value in ckpt_flags.items():

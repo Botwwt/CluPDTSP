@@ -129,7 +129,7 @@ To evaluate another ablation, replace `run_full.py` with one of:
 
 ## References
 
-**Cluster-Aware Attention-Based Deep Reinforcement Learning for Pickup and Delivery Problems** Wentao Wang, Lifeng Han, and Guangyu Zou. *arXiv preprint arXiv:2603.10053*, 2026.  
+**Cluster-Aware Attention-Based Deep Reinforcement Learning for Pickup and Delivery Problems** Wentao Wang, Lifeng Han, and Guangyu Zou. *arXiv preprint arXiv:2603.10053*, 2026.
 [[Paper]](https://arxiv.org/abs/2603.10053)
 
 <details>
@@ -137,11 +137,11 @@ To evaluate another ablation, replace `run_full.py` with one of:
 
 ```bibtex
 @misc{wang2026clusteraware,
-      title={Cluster-Aware Attention-Based Deep Reinforcement Learning for Pickup and Delivery Problems}, 
+      title={Cluster-Aware Attention-Based Deep Reinforcement Learning for Pickup and Delivery Problems},
       author={Wentao Wang and Lifeng Han and Guangyu Zou},
       year={2026},
       eprint={2603.10053},
       archivePrefix={arXiv},
       primaryClass={cs.LG},
-      url={[https://arxiv.org/abs/2603.10053](https://arxiv.org/abs/2603.10053)}, 
+      url={[https://arxiv.org/abs/2603.10053](https://arxiv.org/abs/2603.10053)},
 }
