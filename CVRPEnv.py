@@ -72,8 +72,6 @@ class CVRPEnv:
             node_demand = self.saved_node_demand.to(device)
             cluster_list = self.saved_cluster_list.to(device)
             self.pairing = self.saved_pairing.to(device)
-            if self.batch_size != 1 and aug_factor == 1:
-                self.batch_size = 1
 
         if aug_factor > 1:
             if aug_factor == 8:

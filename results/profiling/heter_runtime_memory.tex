@@ -1,0 +1,28 @@
+\begin{tabular}{lllr rrrr}\toprule
+Method & Size & Distribution & Decode & GPU alloc. & GPU reserved & Latency (s) & Throughput \\
+\midrule
+Heter & 10 & clustered & Greedy & 0.013 & 0.025 & 0.014002 & 71.417 \\
+Heter & 10 & clustered & Sampling-1280 & 0.060 & 0.090 & 0.018718 & 53.424 \\
+Heter & 10 & clustered & Sampling-12800 & 0.062 & 0.092 & 0.154851 & 6.458 \\
+Heter & 10 & uniform & Greedy & 0.013 & 0.025 & 0.014324 & 69.813 \\
+Heter & 10 & uniform & Sampling-1280 & 0.060 & 0.090 & 0.018241 & 54.820 \\
+Heter & 10 & uniform & Sampling-12800 & 0.062 & 0.092 & 0.149361 & 6.695 \\
+Heter & 20 & clustered & Greedy & 0.013 & 0.025 & 0.022834 & 43.795 \\
+Heter & 20 & clustered & Sampling-1280 & 0.107 & 0.125 & 0.031401 & 31.847 \\
+Heter & 20 & clustered & Sampling-12800 & 0.111 & 0.127 & 0.274943 & 3.637 \\
+Heter & 20 & uniform & Greedy & 0.013 & 0.025 & 0.023346 & 42.834 \\
+Heter & 20 & uniform & Sampling-1280 & 0.107 & 0.125 & 0.030756 & 32.514 \\
+Heter & 20 & uniform & Sampling-12800 & 0.111 & 0.127 & 0.277202 & 3.607 \\
+Heter & 40 & clustered & Greedy & 0.013 & 0.025 & 0.039867 & 25.084 \\
+Heter & 40 & clustered & Sampling-1280 & 0.190 & 0.215 & 0.057687 & 17.335 \\
+Heter & 40 & clustered & Sampling-12800 & 0.202 & 0.295 & 0.557328 & 1.794 \\
+Heter & 40 & uniform & Greedy & 0.013 & 0.025 & 0.040337 & 24.791 \\
+Heter & 40 & uniform & Sampling-1280 & 0.190 & 0.215 & 0.059293 & 16.865 \\
+Heter & 40 & uniform & Sampling-12800 & 0.202 & 0.295 & 0.548817 & 1.822 \\
+Heter & 80 & clustered & Greedy & 0.014 & 0.027 & 0.073397 & 13.624 \\
+Heter & 80 & clustered & Sampling-1280 & 0.361 & 0.414 & 0.140367 & 7.124 \\
+Heter & 80 & clustered & Sampling-12800 & 0.399 & 0.570 & 1.346260 & 0.743 \\
+Heter & 80 & uniform & Greedy & 0.014 & 0.027 & 0.073860 & 13.539 \\
+Heter & 80 & uniform & Sampling-1280 & 0.361 & 0.414 & 0.138179 & 7.237 \\
+Heter & 80 & uniform & Sampling-12800 & 0.399 & 0.570 & 1.350869 & 0.740 \\
+\bottomrule\end{tabular}

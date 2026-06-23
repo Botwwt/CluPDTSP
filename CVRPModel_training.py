@@ -28,11 +28,13 @@ class CVRPModel(nn.Module):
         super().__init__()
         self.model_params = model_params
         embedding_dim = self.model_params['embedding_dim']
+        self.enable_encoder_global = model_params.get('enable_encoder_global', True)
         self.enable_encoder_cluster = model_params.get('enable_encoder_cluster', True)
         self.enable_decoder_cluster = model_params.get('enable_decoder_cluster', True)
-        self.use_learned_gate = model_params.get('use_learned_gate', False)
-        if self.use_learned_gate and not self.enable_decoder_cluster:
-            self.use_learned_gate = False
+        self.decoder_fusion = model_params.get('decoder_fusion', 'learned_gate')
+        if not self.enable_decoder_cluster:
+            self.decoder_fusion = 'single'
+        self.use_learned_gate = self.decoder_fusion == 'learned_gate'
 
         self.encoder = CVRP_Encoder(**model_params)
         self.decoder_inter = CVRP_Decoder(**model_params)
@@ -43,7 +45,9 @@ class CVRPModel(nn.Module):
             print(">> CVRPModel: Using STRATEGIC LEARNED GATING mechanism (with other-cluster info).")
         else:
             self.gate = None
-            if self.enable_decoder_cluster:
+            if self.enable_decoder_cluster and self.decoder_fusion == 'average':
+                print(">> CVRPModel: Using FIXED AVERAGE decoder fusion.")
+            elif self.enable_decoder_cluster:
                 print(">> CVRPModel: Using PERFECTED RULE-BASED switching.")
             else:
                 print(">> CVRPModel: Decoder cluster disabled; using single TSP decoder.")
@@ -139,6 +143,13 @@ class CVRPModel(nn.Module):
                     probs = probs / final_probs_sum
                     # ==============================================================================
 
+                elif self.decoder_fusion == 'average':
+                    probs = 0.5 * probs_intra + 0.5 * probs_inter
+                    feasible_mask = (state.ninf_mask == 0).float()
+                    probs = probs * feasible_mask
+                    probs_sum = probs.sum(dim=2, keepdim=True)
+                    fallback_probs = feasible_mask / feasible_mask.sum(dim=2, keepdim=True).clamp_min(1.0)
+                    probs = torch.where(probs_sum == 0, fallback_probs, probs / probs_sum.clamp_min(1e-12))
                 else: # Rule-based switching
                     in_cluster = state.in_cluster.unsqueeze(-1).expand_as(probs_inter)
                     probs = torch.where(in_cluster, probs_intra, probs_inter)
@@ -255,6 +266,7 @@ class EncoderLayer(nn.Module):
     def __init__(self, **model_params):
         super().__init__()
         self.model_params = model_params
+        self.enable_encoder_global = model_params.get('enable_encoder_global', True)
         self.enable_encoder_cluster = model_params.get('enable_encoder_cluster', True)
         embedding_dim = self.model_params['embedding_dim']
         head_num = self.model_params['head_num']
@@ -271,16 +283,22 @@ class EncoderLayer(nn.Module):
         self.add_n_normalization_2 = AddAndInstanceNormalization(**model_params)
     def forward(self, input1, mask):
         head_num = self.model_params['head_num']
-        q = reshape_by_heads(self.Wq(input1), head_num=head_num)
-        k = reshape_by_heads(self.Wk(input1), head_num=head_num)
-        v = reshape_by_heads(self.Wv(input1), head_num=head_num)
-        out_concat = multi_head_attention(q, k, v)
+        attention_outputs = []
+        if self.enable_encoder_global:
+            q = reshape_by_heads(self.Wq(input1), head_num=head_num)
+            k = reshape_by_heads(self.Wk(input1), head_num=head_num)
+            v = reshape_by_heads(self.Wv(input1), head_num=head_num)
+            attention_outputs.append(multi_head_attention(q, k, v))
         if self.enable_encoder_cluster and mask is not None:
             q2 = reshape_by_heads(self.Wq2(input1), head_num=head_num)
             k2 = reshape_by_heads(self.Wk2(input1), head_num=head_num)
             v2 = reshape_by_heads(self.Wv2(input1), head_num=head_num)
-            out_concat2 = cross_cluster_attention(q2, k2, v2, mask)
-            out_concat = out_concat + out_concat2
+            attention_outputs.append(cross_cluster_attention(q2, k2, v2, mask))
+        if not attention_outputs:
+            raise ValueError("At least one encoder attention branch must be enabled.")
+        out_concat = attention_outputs[0]
+        for branch_out in attention_outputs[1:]:
+            out_concat = out_concat + branch_out
         multi_head_out = self.multi_head_combine(out_concat)
         out1 = self.add_n_normalization_1(input1, multi_head_out)
         out2 = self.feed_forward(out1)

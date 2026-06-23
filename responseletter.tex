@@ -1,0 +1,147 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{amssymb, amsmath, color, amsbsy, bm}
+\usepackage{subcaption}
+\captionsetup{font=footnotesize}
+\usepackage{epsfig}
+\usepackage{amsthm}
+\renewcommand\qedsymbol{$\blacksquare$}
+\newtheorem{Corollary}{\textbf{Corollary}}
+\newtheorem{Theorem}{\textbf{Theorem}}
+\newtheorem{question}{\textbf{Question}}
+\newtheorem{condition}{Condition}
+\usepackage{fixltx2e}
+\usepackage{cite}
+\usepackage{bbm}
+\usepackage{ifthen}
+\usepackage{verbatim}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{enumitem}
+
+\newcommand{\E}{\mathbb{E}}
+
+\title{Responses to the Editor's and Reviewers' Comments on ``Cluster-Aware Attention-Based Deep Reinforcement Learning for Pickup and Delivery Problems''}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+First of all, we sincerely thank the Editor and the reviewers for their careful reading of our manuscript and for their constructive comments. Following these suggestions, we have revised the manuscript throughout and carefully checked the consistency between the revised paper and the present response letter. In the following, we address the comments point by point and quote the relevant revised text where appropriate.
+\
+
+\begin{center}
+\Large \textbf{Reviewer 1}
+\end{center}
+
+\noindent APIN-D-26-01512
+
+\noindent Cluster-Aware Attention-Based Deep Reinforcement Learning for Pickup and Delivery Problems
+
+\noindent This manuscript proposes: Cluster-Aware Attention-Based Deep Reinforcement Learning for Pickup and Delivery Problems. The manuscript is completely congruent with its title. It deals with a modern and interesting topic. The manuscript has addressed a prominent solution, but needs major improvements, which are listed below:
+
+\begin{itemize}
+\item[\textbf{Comment. 1}] {Abstract (amendments):
+The abstract demonstrates a promising research idea in the field of pick-up and delivery problem-solving using deep reinforcement learning, effectively employing cluster-aware attention and hierarchical decoding concepts. However, the abstract suffers from excessive descriptive density and technical detail, which obscures the core scientific message. Furthermore, the novelty element and the research gap are not adequately highlighted. Additionally, the abstract needs to include more precise and quantifiable quantitative results to demonstrate its actual superiority compared to the latest reference methods in the literature.}
+
+
+\item[\textbf{Response:}] We have rewritten the abstract to reduce architectural detail and to emphasize the scientific message: PDP routes contain pickup--delivery pairing and multi-scale spatial regularities that are not well represented by flat attention alone. The revised abstract now foregrounds the research gap, the cluster-aware encoder, the hierarchical dual-decoder, and the practical implication of one-pass inference. We also state that the revised experiments include enlarged 10,000-instance evaluations, standard deviations, paired comparisons when aligned raw outputs are available, and runtime/memory profiling.
+
+
+\item[\textbf{Comment. 2}] {Introduction (amendments):
+
+
+The introduction provides a suitable background on the importance of Pickup and Delivery issues and the evolution of deep reinforcement learning in routing, with good coverage of recent work related to neural combinatorial optimization. However, the section tends toward lengthy descriptive narratives rather than critical analysis, failing to highlight the research gaps and inherent limitations of previous studies sharply and convincingly enough to justify the actual need for the proposed model. Furthermore, the introduction contains a considerable amount of repetition and general details regarding VRP and DRL, which diminishes its focus on core scientific contribution and weakens the required academic rigor.}
+
+
+\item[\textbf{Response:}] We have shortened repetitive background material and sharpened the motivation. The revised introduction distinguishes exact/heuristic PDP solvers, one-pass neural construction policies, and search-augmented neural methods. It then states the specific gap addressed by the paper: existing PDP neural policies largely rely on flat node representations or expensive inference-time improvement, while clustered pickup and delivery layouts require a policy that can represent both local intra-region routing and global region transitions.
+
+
+\item[\textbf{Comment. 3}] {Related Work
+
+
+The literature review section presents a good number of recent studies related to PDP and DRL methods; however, the presentation remains more of a descriptive survey than a critical review aimed at building scientific rigor for the proposed model. Furthermore, the section does not clearly explain the fundamental differences between attention-based, neural search, and collaborative improvement frameworks in terms of computational complexity, scalability, or inference latency issues, even though these points are central to the current research contribution. In addition, the section lacks a deeper critical analysis of the limitations of recent reference works such as NCS and Heter-AM, and it does not adequately explain why these models fail to effectively represent multi-scale spatial structures, thus weakening the relevance of the related work to the actual novelty of the research.}
+
+
+\item[\textbf{Response:}] We have revised the related-work section to be more analytical rather than purely descriptive. In particular, we now contrast attention-based construction methods, neural improvement/search methods, and collaborative-search frameworks in terms of scalability and inference latency. We also clarify the relationship with Heter-AM and NCS: Heter-AM introduces role-specific attention for depot/pickup/delivery nodes, whereas our model explicitly decomposes global and intra-cluster attention and uses a hierarchical decoder; NCS can provide strong quality but requires iterative inference-time search, so we now report runtime and memory separately.
+
+
+\item[\textbf{Comment. 4}] {Preliminary 
+
+
+The Preliminary section provides a clear definition of the Pickup and Delivery problem and a suitable mathematical formulation for key constraints such as precedence and sequence constraints, thus offering a solid foundation for understanding the proposed model. However, the section tends to reintroduce concepts already familiar from the PDP literature without adding an analysis that directly links the mathematical formulation to the challenges targeted by the proposed architecture, particularly regarding the representation of the cluster structure within the RL framework. Furthermore, some parts of the MIP formulation appear more of a formal inclusion than a component actually used in training or inference, and there is a lack of clarity regarding the relationship between the mathematical constraints and the masking mechanism used within the autoregressive decoding..}
+
+
+\item[\textbf{Response:}] We have clarified that the mathematical formulation defines the feasible PDP solution space, while the neural decoder enforces feasibility through autoregressive masking. The revised preliminary section explicitly connects the precedence constraints to the mask that prevents delivery nodes from becoming available before their paired pickups are visited. We also clarify that the MIP formulation is used as a formal problem definition rather than as a training or inference subroutine.
+
+
+\item[\textbf{Comment. 5}] {Methodology 
+
+
+The Methodology section is one of the strongest parts of the research in terms of organization and architecture, providing a detailed description of the cluster-aware encoder and hierarchical dual-decoder mechanisms with a clear integration of Transformer and reinforcement learning concepts. However, the section suffers from technical density and lengthy architectural descriptions, making some parts more akin to an operational explanation than a scientific analysis, particularly regarding attention branches and gating mechanisms. There is also a lack of sufficient theoretical justification for choosing this architecture compared to modern alternative designs. Furthermore, the mathematical analysis remains limited regarding the impact of cluster masking and the integration of intra/inter-cluster decisions on the theoretical stability or computational complexity of the model.}
+
+
+\item[\textbf{Response:}] We have added explanatory text on why the proposed architecture is suitable for clustered PDP instances. The key point is that PDP decisions naturally decompose into local ordering inside pickup/delivery regions and global transitions between regions. The revised methodology discusses how global self-attention, intra-cluster attention, and the dual decoder correspond to these two decision scales. We also added a complexity discussion: dense masked attention has the same asymptotic order as full attention, while a grouped/block-sparse implementation would reduce the cluster branch score computation; therefore, the current advantage should be interpreted mainly as an inductive bias and not as an asymptotic-complexity claim.
+
+
+\item[\textbf{Comment. 6}] {Computational Experimentation and Analysis 
+
+
+The Computational Experimentation and Analysis section offers a broad experimental evaluation, including tests on clustered and uniform distributions with direct comparisons against modern models such as NCS and Heter-AM, as well as ablation and cross-size generalization studies, reflecting a commendable effort to validate the proposed model's efficiency. However, the section focuses heavily on presenting numerical results and relative improvements without providing sufficient statistical analysis or theoretical explanation of the model's actual behavior, particularly regarding the reasons for the superiority of cluster-aware architectures at large scales or the declining performance of certain sampling strategies in large-scale transfers. Furthermore, the complete reliance on synthetic benchmarks diminishes the study's applicability, as there is no evaluation on real-world datasets or clear comparisons in terms of memory consumption, computational complexity, and
+inference efficiency in real-world operating environments.}
+
+
+\item[\textbf{Response:}] We have substantially expanded the experimental analysis. First, Heter was rerun under the same unified PDP10/PDP20/PDP40/PDP80 test sets, clustered/uniform distributions, instance order, Greedy/Sampling-1280/Sampling-12800 decode strategies, and 10,000 instances per group. The added Heter table reports mean objective, standard deviation, and inference time. Second, we added paired-statistics scripts that validate instance alignment before computing mean paired gap, 95\% confidence interval, $p$-value, effect size, and Win/Tie/Loss; entries whose CAADRL/NCS raw outputs are not present are left as explicit TODO interfaces rather than being filled with fabricated values. Third, we added route-level mechanism metrics: inter-cluster switch count, intra-cluster edge ratio, and cluster separability index. Because the saved Heter outputs do not expose gate probabilities or decoder logits, we do not report gate entropy, stay probability, or logit margin for Heter. Fourth, we added a reproducible Heter route visualization and restrict CAADRL-vs-Heter visual claims until aligned CAADRL raw output is synchronized. Fifth, we added a Li\&Lim-PDP-relaxed external benchmark and explicitly state that it is not comparable to original PDPTW best-known solutions because time windows, capacity, and multi-vehicle objectives are ignored. Finally, we added runtime/memory profiling with 20 warm-up runs, CUDA synchronization, peak allocated/reserved GPU memory, CPU RAM, latency, throughput, and p95 latency.
+
+
+\item[\textbf{Comment. 7}] {conclusions and Future Work 
+
+
+The Conclusion and Future Work section provides a structured summary of the proposed model's key contributions, reconnecting the results to the research objective of improving PDP problem-solving using a cluster-aware hierarchical DRL architecture. However, the section tends to recapitulate the methodology components and results at length rather than offering a deeper critical analysis of the model's current limitations, particularly regarding scalability, reliance on industrial data, and the complexity of inference in real-world environments. Furthermore, the directions for future work, while varied, remain relatively general and lack a more precise technical definition of how to address the current constraints or develop the proposed architecture toward real-world industrial applications.}
+
+
+\item[\textbf{Response:}] We have revised the conclusion to make the limitations more explicit. The revised text now notes that the present study focuses on static single-vehicle Euclidean PDP instances; richer real-world settings with time windows, capacities, heterogeneous fleets, multiple vehicles, stochastic arrivals, and industrial dispatch constraints remain future work. We also highlight that deployment requires attention to latency and memory, which is why the revised manuscript reports profiling results instead of only route quality.
+
+
+\item[\textbf{Comment. 8}] {References (amendments):
+
+
+References are modern and acceptable.
+. }
+
+
+\item[\textbf{Response:}] We have checked the references and updated the discussion around recent PDP, neural routing, and neural collaborative-search work to make the positioning clearer. No reference claims are used to replace the new empirical evidence; the revised experiments provide the additional validation requested by the reviewers.
+
+
+\end{itemize}
+
+\vspace{0.5cm}
+
+\begin{center}
+\Large \textbf{Reviewer 2}
+\end{center}
+
+\begin{itemize}
+\item[\textbf{Comment. 1}] {Detailed result analysis is needed}
+
+
+\item[\textbf{Response:}] We agree and have added several layers of detailed result analysis. The revised manuscript now includes a fair 10,000-instance Heter rerun with mean and standard deviation, route-level behavior metrics, Li\&Lim-PDP-relaxed external testing, and synchronized runtime/memory profiling. The paired-comparison scripts validate dataset name, instance ID, decode strategy, seed, and ordering before computing gaps, so instance-level comparisons are only reported after the raw outputs are genuinely aligned and present in the repository.
+
+
+\item[\textbf{Comment. 2}] {Ablation Study is needed}
+
+\item[\textbf{Response:}] We agree and have implemented the six core variants requested by the reviewers: full CAADRL, global-only encoder, cluster-only encoder, single decoder, fixed average decoder fusion without the learned gate, and no-POMO/single-rollout training. These variants are controlled through configuration flags rather than copied model files, and the provided ablation grid uses the same clustered PDP20/PDP40/PDP80 10,000-instance test sets with Greedy and Sampling-1280 decoding. The repository records this grid as pending until the corresponding GPU run produces checkpoints, raw outputs, the summary table, and the ablation bar plot; no placeholder ablation numbers are inserted.
+
+
+\end{itemize}
+
+\vspace{0.5cm}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

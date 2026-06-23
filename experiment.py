@@ -15,16 +15,68 @@ from CVRPTester import CVRPTester as Tester
 from CVRProblemDef import load_pdp_pkl_instance
 
 
-ABLATION_CHOICES = ['full', 'no_enc_cluster', 'no_dec_cluster', 'no_cluster', 'pomo']
+ABLATION_CHOICES = [
+    'full',
+    'no_enc_cluster',
+    'cluster_only',
+    'no_dec_cluster',
+    'avg_fusion',
+    'no_cluster',
+    'pomo',
+    'no_pomo',
+]
 
 
 def resolve_ablation(ablation):
     mapping = {
-        'full': (True, True),
-        'no_enc_cluster': (False, True),
-        'no_dec_cluster': (True, False),
-        'no_cluster': (False, False),
-        'pomo': (False, False),
+        'full': {
+            'enable_encoder_global': True,
+            'enable_encoder_cluster': True,
+            'enable_decoder_cluster': True,
+            'decoder_fusion': 'learned_gate',
+        },
+        'no_enc_cluster': {
+            'enable_encoder_global': True,
+            'enable_encoder_cluster': False,
+            'enable_decoder_cluster': True,
+            'decoder_fusion': 'learned_gate',
+        },
+        'cluster_only': {
+            'enable_encoder_global': False,
+            'enable_encoder_cluster': True,
+            'enable_decoder_cluster': True,
+            'decoder_fusion': 'learned_gate',
+        },
+        'no_dec_cluster': {
+            'enable_encoder_global': True,
+            'enable_encoder_cluster': True,
+            'enable_decoder_cluster': False,
+            'decoder_fusion': 'single',
+        },
+        'avg_fusion': {
+            'enable_encoder_global': True,
+            'enable_encoder_cluster': True,
+            'enable_decoder_cluster': True,
+            'decoder_fusion': 'average',
+        },
+        'no_cluster': {
+            'enable_encoder_global': True,
+            'enable_encoder_cluster': False,
+            'enable_decoder_cluster': False,
+            'decoder_fusion': 'single',
+        },
+        'pomo': {
+            'enable_encoder_global': True,
+            'enable_encoder_cluster': False,
+            'enable_decoder_cluster': False,
+            'decoder_fusion': 'single',
+        },
+        'no_pomo': {
+            'enable_encoder_global': True,
+            'enable_encoder_cluster': True,
+            'enable_decoder_cluster': True,
+            'decoder_fusion': 'learned_gate',
+        },
     }
     if ablation not in mapping:
         raise ValueError(f"Unknown ablation: {ablation}")
@@ -32,18 +84,20 @@ def resolve_ablation(ablation):
 
 
 def apply_ablation(model_params, ablation, disable_gate):
-    enable_encoder, enable_decoder = resolve_ablation(ablation)
-    model_params['enable_encoder_cluster'] = enable_encoder
-    model_params['enable_decoder_cluster'] = enable_decoder
-    if disable_gate or not enable_decoder:
-        model_params['use_learned_gate'] = False
+    ablation_params = resolve_ablation(ablation)
+    model_params.update(ablation_params)
+    if disable_gate and model_params['decoder_fusion'] == 'learned_gate':
+        model_params['decoder_fusion'] = 'rule'
+    if not model_params['enable_decoder_cluster']:
+        model_params['decoder_fusion'] = 'single'
+    model_params['use_learned_gate'] = model_params['decoder_fusion'] == 'learned_gate'
     return model_params
 
 
 def build_train_configs(opts):
     env_params = {
         'problem_size': opts.problem_size,
-        'pomo_size': opts.problem_size,
+        'pomo_size': 1 if (opts.single_rollout or opts.ablation == 'no_pomo') else opts.problem_size,
         'seed': opts.seed,
         'distribution': opts.distribution,
     }
@@ -79,7 +133,7 @@ def build_train_configs(opts):
         'train_episodes': opts.train_episodes,
         'train_batch_size': opts.train_batch_size,
         'logging': {
-            'model_save_interval': 50,
+            'model_save_interval': opts.checkpoint_interval,
             'img_save_interval': 100,
             'log_image_params_1': {
                 'json_foldername': 'log_image_style',
@@ -105,6 +159,8 @@ def build_train_configs(opts):
     log_desc = f"train_pdtsp_n{opts.problem_size}_{opts.distribution}_{opts.ablation}"
     if model_params.get('use_learned_gate'):
         log_desc += '_gate'
+    if env_params['pomo_size'] == 1:
+        log_desc += '_single_rollout'
 
     logger_params = {
         'log_file': {
@@ -112,6 +168,8 @@ def build_train_configs(opts):
             'filename': 'run_log',
         }
     }
+    if opts.result_dir:
+        logger_params['log_file']['filepath'] = os.path.join(opts.result_dir, '{desc}')
 
     return env_params, model_params, optimizer_params, trainer_params, logger_params
 
@@ -131,7 +189,8 @@ def run_train(opts):
                       optimizer_params=optimizer_params,
                       trainer_params=trainer_params)
 
-    copy_all_src(trainer.result_folder)
+    if not opts.resume_path:
+        copy_all_src(trainer.result_folder)
     trainer.run()
 
 
@@ -271,16 +330,19 @@ def parse_args(argv=None):
     parser.add_argument('--task', required=True, choices=['train', 'test'])
     parser.add_argument('--ablation', type=str, default='full', choices=ABLATION_CHOICES)
     parser.add_argument('--disable_gate', action='store_true')
+    parser.add_argument('--single_rollout', action='store_true')
 
     parser.add_argument('--problem_size', type=int, default=60)
     parser.add_argument('--distribution', type=str, default='clustered', choices=['uniform', 'clustered'])
     parser.add_argument('--seed', type=int, default=1234)
     parser.add_argument('--epochs', type=int, default=800)
+    parser.add_argument('--checkpoint-interval', type=int, default=100)
     parser.add_argument('--train_episodes', type=int, default=2816)
     parser.add_argument('--train_batch_size', type=int, default=256)
     parser.add_argument('--cuda_device_num', type=int, default=0)
     parser.add_argument('--resume_path', type=str, default=None)
     parser.add_argument('--resume_epoch', type=int, default=None)
+    parser.add_argument('--result_dir', type=str, default=None)
 
     parser.add_argument('instances', nargs='*')
     parser.add_argument('--model_path', type=str, default=None)

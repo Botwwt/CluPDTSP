@@ -46,14 +46,19 @@ class CVRPTester:
         if not ckpt_params:
             return
         ckpt_flags = {
+            'enable_encoder_global': ckpt_params.get('enable_encoder_global', True),
             'enable_encoder_cluster': ckpt_params.get('enable_encoder_cluster', True),
             'enable_decoder_cluster': ckpt_params.get('enable_decoder_cluster', True),
-            'use_learned_gate': ckpt_params.get('use_learned_gate', False),
+            'decoder_fusion': ckpt_params.get(
+                'decoder_fusion',
+                'learned_gate' if ckpt_params.get('use_learned_gate', False) else 'rule'
+            ),
         }
         current_flags = {
+            'enable_encoder_global': self.model_params.get('enable_encoder_global', True),
             'enable_encoder_cluster': self.model_params.get('enable_encoder_cluster', True),
             'enable_decoder_cluster': self.model_params.get('enable_decoder_cluster', True),
-            'use_learned_gate': self.model_params.get('use_learned_gate', False),
+            'decoder_fusion': self.model_params.get('decoder_fusion', 'rule'),
         }
         mismatches = []
         for key, ckpt_value in ckpt_flags.items():
